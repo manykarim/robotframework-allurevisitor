@@ -1,0 +1,26 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Test / tooling caches
+.pytest_cache/
+.ruff_cache/
+
+# Generated Allure / Robot artifacts
+reports/
+allure-results/
+allure-report/
+output.xml
+log.html
+report.html
+
+# Local agent / editor tooling
+.claude/
+.opencode/
