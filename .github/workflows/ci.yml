@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync --locked
+
+      - name: Lint (ruff)
+        run: uv run ruff check .
+
+      - name: Test (pytest)
+        # The e2e test self-skips if no Allure generator can be resolved, so it
+        # never fails CI on environmental grounds; ubuntu runners ship Node + Java
+        # so the npx allure-commandline fallback typically runs it for real.
+        run: uv run pytest -v
+
+      - name: Build distribution
+        run: uv build
+
+      - name: Check distribution metadata
+        run: uv run --with twine twine check dist/*
